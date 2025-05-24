@@ -1,3 +1,5 @@
+import * as translations from './translations';
+
 class I18nService {
   constructor(services, config = {}) {
     this.services = services;
@@ -13,9 +15,22 @@ class I18nService {
     return this._currentLang;
   }
 
-  translate(key, lang = this._currentLang) {
-    const translations = require(`./translations/${lang}.json`);
-    return translations[key] || key;
+  translate(key, options = {}, lang = this._currentLang) {
+    const langTranslations = translations[lang] || {};
+    let result = langTranslations[key] || key;
+
+    // Если передан `count`, обрабатываем плюрализацию
+    if (typeof options.count !== 'undefined') {
+      if (typeof result === 'object') {
+        // Проверяем, что результат — объект с формами
+        const pluralKey = new Intl.PluralRules(lang).select(options.count);
+        if (pluralKey in result) {
+          result = result[pluralKey];
+        }
+      }
+    }
+
+    return result;
   }
 
   setLang(lang) {
