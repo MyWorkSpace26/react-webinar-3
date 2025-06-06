@@ -16,7 +16,7 @@ const config = {
     },
   },
   api: {
-    baseUrl: '',
+    baseUrl: process.env.NODE_ENV === 'production' ? '/api' : 'http://query.rest',
   },
   i18n: {
     defaultLang: 'ru',
